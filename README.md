@@ -1,86 +1,118 @@
-# Random SVD Configuration and Testing Guide
+# Random SVD Principle and CMake Usage Guide
 
-## Overview
+## 1. Random SVD Principle
 
-This guide provides instructions for configuring and testing the Random SVD implementations in C, C++, and Fortran. The implementations will be tested using a Python script (`test.py`).
+### 1.1 Overview
 
-## Prerequisites
+Random Singular Value Decomposition (Random SVD) is a dimensionality reduction technique used for high-dimensional data. It approximates the singular value decomposition of a matrix through random projections, making it effective for handling large-scale datasets.
 
-Before proceeding, ensure you have the following installed on your system:
+### 1.2 Mathematical Principle
 
-- **C/C++ Compiler**: GCC or any compatible compiler.
-- **Fortran Compiler**: GFortran or any compatible Fortran compiler.
-- **Python**: Version 3.x.
-- **NumPy**: Install via pip:
-  ```bash
-  pip install numpy
-  ```
-- **SciPy**: Install via pip:
-  ```bash
-  pip install scipy
-  ```
-- **LAPACK and BLAS**: These libraries are required for linear algebra operations. You can install them as follows:
-  - **Windows**: Use [OpenBLAS](https://www.openblas.net/) or [LAPACKe](http://www.netlib.org/lapack/).
-  - **Linux**: Install via package manager:
-    ```bash
-    sudo apt-get install liblapack-dev libblas-dev
-    ```
-  - **macOS**: Use Homebrew:
-    ```bash
-    brew install openblas
-    ```
+Given a matrix \( A \in \mathbb{R}^{m \times n} \), its Singular Value Decomposition (SVD) can be expressed as:
 
-## File Structure
+\[
+A = U \Sigma V^T
+\]
 
-Create a directory for your project and place the following files inside it:
+where:
+- \( U \) is an \( m \times m \) orthogonal matrix containing the left singular vectors.
+- \( \Sigma \) is an \( m \times n \) diagonal matrix containing the singular values.
+- \( V \) is an \( n \times n \) orthogonal matrix containing the right singular vectors.
 
-```
-D:\Files\Computational Science\random SVD\
-│
-├── random_svd.c
-├── random_svd.cpp
-├── random_svd.f90
-└── test.py
-```
+### 1.3 Random Projection
 
-## Compilation Instructions
+The core idea of Random SVD is to reduce computational complexity through random projection. The specific steps are as follows:
 
-### 1. Compile the C Version
+1. **Generate a Random Matrix**: Generate a random matrix \( \Omega \in \mathbb{R}^{n \times k} \), where \( k \) is the desired number of features.
 
-Open a command prompt and navigate to the directory containing `random_svd.c`. Use the following command to compile:
+2. **Compute Projection**: Compute \( Y = A \Omega \), resulting in a smaller matrix \( Y \in \mathbb{R}^{m \times k} \).
 
-```bash
-gcc -shared -o "random_svd.so" -fPIC "random_svd.c" -llapack -lblas
-```
+3. **QR Decomposition**: Perform QR decomposition on \( Y \) to obtain the orthogonal matrix \( Q \) and the upper triangular matrix \( R \):
 
-### 2. Compile the C++ Version
+\[
+Y = QR
+\]
 
-Use the following command to compile the C++ version:
+4. **Compute Matrix B**: Compute \( B = Q^T A \), and then perform SVD on \( B \):
 
-```bash
-g++ -shared -o "random_svd.so" -fPIC "random_svd.cpp" -I"path_to_eigen" -llapack -lblas
-```
+\[
+B = U_B \Sigma_B V_B^T
+\]
 
-Make sure to replace `path_to_eigen` with the actual path to the Eigen library.
+5. **Recover U Matrix**: Finally, the left singular vectors \( U \) can be obtained as \( U = Q U_B \).
 
-### 3. Compile the Fortran Version
+### 1.4 Summary of Formulas
 
-Use the following command to compile the Fortran version:
+The steps of Random SVD can be summarized as:
 
-```bash
-gfortran -shared -o "random_svd.so" -fPIC "random_svd.f90"
-```
+\[
+Y = A \Omega
+\]
+\[
+Q, R = \text{QR}(Y)
+\]
+\[
+B = Q^T A
+\]
+\[
+B = U_B \Sigma_B V_B^T
+\]
+\[
+U = Q U_B
+\]
 
-## Running the Tests
+## 2. CMake Usage Guide
 
-After compiling the libraries, you can run the `test.py` script to test all three implementations:
+### 2.1 Download CMake
 
-```bash
-python test.py
-```
+1. Visit the [CMake official website](https://cmake.org/download/).
+2. Choose the appropriate installation package for your operating system.
+3. Follow the installation wizard to complete the installation.
 
-This will execute the tests for the C, C++, and Fortran versions of Random SVD and print the results.
+### 2.2 Modify CMakeLists.txt
 
-## Conclusion
+Create or modify the `CMakeLists.txt` file in the project root directory with the following content:
 
-You have successfully configured and tested the Random SVD implementations in C, C++, and Fortran. If you encounter any issues, ensure that all paths are correctly set and that the necessary libraries are installed.
+
+### 2.3 Compile Files Using CMake
+
+1. Open a terminal (command prompt or terminal).
+2. Navigate to the project root directory.
+3. Create a build directory:
+
+   ```bash
+   mkdir build
+   cd build
+   ```
+
+4. Run CMake to generate build files:
+
+   ```bash
+   cmake ..
+   ```
+
+5. Compile the project:
+
+   ```bash
+   cmake --build .
+   ```
+
+### 2.4 Run Tests
+
+1. In the build directory, run the generated executable:
+
+   ```bash
+   ./random_svd
+   ```
+
+   Or on Windows:
+
+   ```bash
+   random_svd.exe
+   ```
+
+2. Check the output to ensure the program runs correctly.
+
+## 3. Conclusion
+
+Through the above steps, you can understand the principles of Random SVD based on its C++ version. Random SVD is an efficient dimensionality reduction technique suitable for handling large-scale datasets. 
