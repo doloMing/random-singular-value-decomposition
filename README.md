@@ -99,16 +99,10 @@ Create or modify the `CMakeLists.txt` file in the project root directory with th
 
 ### 2.4 Run Tests
 
-1. In the build directory, run the generated executable:
+1. In the build directory, find random_svd.dll and load it via Python. Then, run the test file:
 
    ```bash
-   ./random_svd
-   ```
-
-   Or on Windows:
-
-   ```bash
-   random_svd.exe
+   python test.py
    ```
 
 2. Check the output to ensure the program runs correctly.
